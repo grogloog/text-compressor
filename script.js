@@ -178,6 +178,12 @@ function createDictionaryRow(rule, index) {
   toInput.maxLength = 1;
   toInput.setAttribute("aria-label", "Символ замены");
 
+  const removeButton = document.createElement("button");
+  removeButton.className = "remove-row-button";
+  removeButton.type = "button";
+  removeButton.textContent = "-";
+  removeButton.setAttribute("aria-label", "Удалить замену");
+
   checkbox.addEventListener("change", () => {
     customRules[index].enabled = checkbox.checked;
     updateCustomDictionary();
@@ -195,7 +201,13 @@ function createDictionaryRow(rule, index) {
     updateCustomDictionary();
   });
 
-  row.append(checkbox, fromInput, arrow, toInput);
+  removeButton.addEventListener("click", () => {
+    customRules.splice(index, 1);
+    updateCustomDictionary();
+    renderCustomDictionary();
+  });
+
+  row.append(checkbox, fromInput, arrow, toInput, removeButton);
 
   return row;
 }
