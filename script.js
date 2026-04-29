@@ -2,36 +2,29 @@ const inputText = document.getElementById("inputText");
 const outputText = document.getElementById("outputText");
 const inputByteCount = document.getElementById("inputByteCount");
 const outputByteCount = document.getElementById("outputByteCount");
+const compressionRate = document.getElementById("compressionRate");
+const compressionMethod = document.getElementById("compressionMethod");
+const copyBtn = document.getElementById("copyBtn");
+const copyToast = document.getElementById("copyToast");
 
 const cyrillicRegex = /[\u0400-\u04FF]/;
-const fallbackAlphabetMap = {
-  А: "A",
-  а: "a",
-  В: "B",
-  Е: "E",
-  е: "e",
-  К: "K",
-  М: "M",
-  Н: "H",
-  О: "O",
-  о: "o",
-  Р: "P",
-  р: "p",
-  С: "C",
-  с: "c",
-  Т: "T",
-  У: "Y",
-  у: "y",
-  Х: "X",
-  х: "x"
+const textEncoder = new TextEncoder();
+const alphabetByMethod = {
+  subtle: "./alphabet.json",
+  strong: "./alphabet2.json"
 };
-let alphabetMap = { ...fallbackAlphabetMap };
+let alphabetMap = {};
 
 function calcBytes(text) {
   let total = 0;
 
   for (const char of text) {
-    total += cyrillicRegex.test(char) ? 2 : 1;
+    if (cyrillicRegex.test(char)) {
+      total += 2;
+      continue;
+    }
+
+    total += textEncoder.encode(char).length;
   }
 
   return total;
@@ -46,8 +39,14 @@ function updateOutput() {
 }
 
 function renderBytes() {
-  inputByteCount.textContent = String(calcBytes(inputText.value));
-  outputByteCount.textContent = String(calcBytes(outputText.value));
+  const inputBytes = calcBytes(inputText.value);
+  const outputBytes = calcBytes(outputText.value);
+  const savedBytes = Math.max(0, inputBytes - outputBytes);
+  const savedPercent = inputBytes === 0 ? 0 : Math.round((savedBytes / inputBytes) * 100);
+
+  inputByteCount.textContent = String(inputBytes);
+  outputByteCount.textContent = String(outputBytes);
+  compressionRate.textContent = `Сжато на ${savedPercent}%`;
 }
 
 function handleInput() {
@@ -55,24 +54,63 @@ function handleInput() {
   renderBytes();
 }
 
-async function loadAlphabet() {
+let toastTimeoutId = null;
+
+function showCopyToast() {
+  copyToast.classList.add("show");
+
+  if (toastTimeoutId) {
+    clearTimeout(toastTimeoutId);
+  }
+
+  toastTimeoutId = setTimeout(() => {
+    copyToast.classList.remove("show");
+  }, 1400);
+}
+
+async function copyOutputText() {
+  const text = outputText.value;
+
+  if (!text) {
+    return;
+  }
+
   try {
-    const response = await fetch("./alphabet.json");
+    await navigator.clipboard.writeText(text);
+  } catch {
+    outputText.focus();
+    outputText.select();
+    document.execCommand("copy");
+    outputText.setSelectionRange(0, 0);
+  }
+
+  showCopyToast();
+}
+
+async function loadAlphabet(path) {
+  try {
+    const response = await fetch(path);
 
     if (!response.ok) {
-      throw new Error("Не удалось загрузить alphabet.json");
+      throw new Error(`Не удалось загрузить ${path}`);
     }
 
-    const loadedMap = await response.json();
-    alphabetMap = { ...fallbackAlphabetMap, ...loadedMap };
-  } catch {
-    // При открытии страницы как file:// fetch может быть заблокирован.
-    alphabetMap = { ...fallbackAlphabetMap };
+    alphabetMap = await response.json();
+  } catch (error) {
+    alphabetMap = {};
+    console.error(`Не удалось загрузить словарь ${path}:`, error);
   }
 }
 
-inputText.addEventListener("input", handleInput);
-
-loadAlphabet().finally(() => {
+async function handleMethodChange() {
+  const method = compressionMethod.value;
+  const dictionaryPath = alphabetByMethod[method] ?? alphabetByMethod.subtle;
+  await loadAlphabet(dictionaryPath);
   handleInput();
-});
+}
+
+inputText.addEventListener("input", handleInput);
+copyBtn.addEventListener("click", copyOutputText);
+compressionMethod.addEventListener("change", handleMethodChange);
+
+handleMethodChange();

@@ -51,6 +51,21 @@ label {
   font-weight: 600;
 }
 
+select {
+  width: 100%;
+  border: 1px solid #c8d4e5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 15px;
+  margin-bottom: 14px;
+  background: #fff;
+}
+
+select:focus {
+  outline: 2px solid #93c5fd;
+  border-color: #93c5fd;
+}
+
 textarea {
   width: 100%;
   resize: vertical;
@@ -77,6 +92,11 @@ textarea:focus {
   flex-wrap: wrap;
 }
 
+.compression-rate {
+  color: #16a34a;
+  margin-left: 8px;
+}
+
 button {
   border: none;
   background: var(--accent);
@@ -89,4 +109,25 @@ button {
 
 button:hover {
   background: var(--accent-hover);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  background: #0f172a;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 10px));
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%);
 }

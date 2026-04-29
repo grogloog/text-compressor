@@ -8,13 +8,13 @@
   </head>
   <body>
     <main class="container">
-      <h1>Сжатие сообщения омоглифами</h1>
-      <p class="subtitle">
-        Русские буквы-двойники заменяются на латинские. Подсчёт байт: кириллица
-        = 2 байта, остальные символы = 1 байт.
-      </p>
-
       <section class="panel">
+        <label for="compressionMethod">Метод сжатия</label>
+        <select id="compressionMethod">
+          <option value="subtle">незаметный</option>
+          <option value="strong">усиленный</option>
+        </select>
+
         <label for="inputText">Исходный текст</label>
         <textarea
           id="inputText"
@@ -30,10 +30,19 @@
         <label for="outputText">Сжатое сообщение</label>
         <textarea id="outputText" rows="8" readonly></textarea>
         <div class="meta">
-          <span>Размер: <strong id="outputByteCount">0</strong> байт</span>
+          <span>
+            Размер: <strong id="outputByteCount">0</strong> байт
+            <strong id="compressionRate" class="compression-rate">
+              Сжато на 0%
+            </strong>
+          </span>
+          <button id="copyBtn" type="button">Скопировать</button>
         </div>
       </section>
     </main>
+    <div id="copyToast" class="toast" role="status" aria-live="polite">
+      Скопировано
+    </div>
 
     <script src="./script.js"></script>
   </body>
