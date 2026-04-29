@@ -13,6 +13,7 @@
         <select id="compressionMethod">
           <option value="subtle">незаметный</option>
           <option value="strong">усиленный</option>
+          <option value="custom">пользовательский</option>
         </select>
 
         <label for="inputText">Исходный текст</label>
@@ -41,6 +42,19 @@
             <button id="clearBtn" class="secondary" type="button">Очистить</button>
           </div>
         </div>
+      </section>
+
+      <section id="customDictionaryPanel" class="panel custom-dictionary" hidden>
+        <div class="dictionary-header">
+          <div>
+            <h2>Пользовательский словарь</h2>
+            <p>Включайте только те замены, которые нужно использовать.</p>
+          </div>
+        </div>
+        <div id="customDictionaryRows" class="dictionary-rows"></div>
+        <button id="addDictionaryRowBtn" type="button" class="add-row-button">
+          +
+        </button>
       </section>
     </main>
     <div id="copyToast" class="toast" role="status" aria-live="polite">
