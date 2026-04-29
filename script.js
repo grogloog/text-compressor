@@ -5,6 +5,7 @@ const outputByteCount = document.getElementById("outputByteCount");
 const compressionRate = document.getElementById("compressionRate");
 const compressionMethod = document.getElementById("compressionMethod");
 const copyBtn = document.getElementById("copyBtn");
+const clearBtn = document.getElementById("clearBtn");
 const copyToast = document.getElementById("copyToast");
 
 const cyrillicRegex = /[\u0400-\u04FF]/;
@@ -87,6 +88,12 @@ async function copyOutputText() {
   showCopyToast();
 }
 
+function clearFields() {
+  inputText.value = "";
+  handleInput();
+  inputText.focus();
+}
+
 async function loadAlphabet(path) {
   try {
     const response = await fetch(path);
@@ -111,6 +118,7 @@ async function handleMethodChange() {
 
 inputText.addEventListener("input", handleInput);
 copyBtn.addEventListener("click", copyOutputText);
+clearBtn.addEventListener("click", clearFields);
 compressionMethod.addEventListener("change", handleMethodChange);
 
 handleMethodChange();
